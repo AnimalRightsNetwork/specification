@@ -81,7 +81,7 @@ class DataSpec
         foreign: false,
         crts: '',
         null: !options[:primary],
-        idx: false
+        index: options[:foreign]
       }.merge(options)
 
       # Print table row
@@ -108,7 +108,7 @@ class DataSpec
       @file.puts <<-END.gsub(/^[ ]{6}/, '')
         <tr>
           <td colspan="4">#{attrs.join(', ')}</td>
-          <td>#{options[:unique] ? 'U' : ''}</td>
+          <td>#{options[:unique] ? 'U' : '✓'}</td>
         </tr>
       END
     end
