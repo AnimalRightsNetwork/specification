@@ -5,11 +5,12 @@ require '../helpers/modelspec'
 
 # Specify data
 DataSpec.new STDOUT do
+  # Options: crts, primary, foreign, index, null
   # Users
   model :users do
     attr :id, :string, crts: "length: 5..25, characters: a-z0-9", primary: true
     attr :display_id, :string, crts: "equal to id except for case", null: false
-    attr :email, :string, crts: "valid email", null: false, index: true
+    attr :email, :string, crts: "valid email", null: false, index: :unique
     attr :password_digest, :string, null: false
     attr :activation_digest, :string
     attr :admin, :boolean, crts: "default: false", null: false
@@ -20,7 +21,7 @@ DataSpec.new STDOUT do
   model :orgs do
     attr :id, :string, crts: "length: 4..32, characters: a-z0-9", primary: true
     attr :display_id, :string, crts: "equal to id except for case", null: false
-    attr :type_id, :string, foreign: true, index: true
+    attr :org_type_id, :integer, foreign: true, null: false
     attr :name, :string, crts: "length: 4..48", index: :unique, null: false
     attr :logo_url, :string, null: false
     attr :cover_url, :string, null: false
@@ -40,7 +41,7 @@ DataSpec.new STDOUT do
   # Organization descriptions
   model :org_descriptions do
     attr :id, :integer, primary: true
-    attr :org_id, :string, foreign: true, null: false
+    attr :org_id, :string, foreign: true, index: false, null: false
     attr :language, :string, crts: "available locale", null: false
     attr :content, :string, crts: "length: 0..5000", null: false
     index [:org_id, :language], unique: true
@@ -57,8 +58,8 @@ DataSpec.new STDOUT do
   # Organization links
   model :org_links do
     attr :id, :integer, primary: true
-    attr :org_id, :string, foreign: true, null: false
-    attr :link_type_id, :integer, foreign: true, null: false
+    attr :org_id, :string, foreign: true, index: false, null: false
+    attr :link_type_id, :integer, foreign: true, index: false, null: false
     attr :url, :string, null: false
     index [:org_id, :link_type_id], unique: true
   end
@@ -73,16 +74,17 @@ DataSpec.new STDOUT do
   # Events
   model :events do
     attr :id, :integer, primary: true
-    attr :org_id, :string, index: true, foreign: true
-    attr :type_id, :integer, foreign: true, index: true, null: false
-    attr :name, :string, crts: "length: 4..64", null: false
+    attr :org_id, :string, foreign: true
+    attr :event_type_id, :integer, foreign: true, null: false
+    attr :name, :string, crts: "length: 4..64", index: true, null: false
     attr :image_url, :string
-    attr :lat, :decimal, crts: "precision: 10, scale: 6", index: true
-    attr :lon, :decimal, crts: "precision: 10, scale: 6", index: true
+    attr :lat, :decimal, crts: "precision: 10, scale: 6"
+    attr :lon, :decimal, crts: "precision: 10, scale: 6"
     attr :start_time, :datetime, index: true, null: false
     attr :end_time, :datetime
     attr :fb_url, :string
     attr :timestamps, :datetime, null: false
+    index [:lat, :lon]
   end
 
   # Event types
@@ -95,13 +97,12 @@ DataSpec.new STDOUT do
   # Event descriptions
   model :event_descriptions do
     attr :id, :integer, primary: true
-    attr :event_id, :integer, foreign: true, null: false
+    attr :event_id, :integer, foreign: true, index: false, null: false
     attr :language, :string, crts: "available locale", null: false
     attr :content, :string, crts: "length: 0..5000", null: false
     index [:event_id, :language], unique: true
   end
 
-  # crts, primary, foreign, index, null
   # Event tags
   model :event_tags do
     attr :id, :integer, primary: true
