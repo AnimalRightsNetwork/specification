@@ -43,7 +43,7 @@ DataSpec.new STDOUT do
     attr :id, :integer, primary: true
     attr :org_id, :string, foreign: true, index: false, null: false
     attr :language, :string, crts: "available locale", null: false
-    attr :content, :string, crts: "length: 0..5000", null: false
+    attr :content, :string, crts: "length: 1..5000", null: false
     index [:org_id, :language], unique: true
   end
 
@@ -99,7 +99,7 @@ DataSpec.new STDOUT do
     attr :id, :integer, primary: true
     attr :event_id, :integer, foreign: true, index: false, null: false
     attr :language, :string, crts: "available locale", null: false
-    attr :content, :string, crts: "length: 0..5000", null: false
+    attr :content, :string, crts: "length: 1..5000", null: false
     index [:event_id, :language], unique: true
   end
 
